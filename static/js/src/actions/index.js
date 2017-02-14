@@ -129,10 +129,10 @@ export function publish() {
             if(!draft.question){
                 errors.question = "Required";
             }
-            if(!draft.answers.length < 2){
+            if(draft.answers.length < 2){
                 errors.answers = "At least two answers";
             }
-            const count_empty_answers = draft.filter( (answer) => answer.text == '').length;
+            const count_empty_answers = draft.answers.filter( (answer) => answer.text == '').length;
             if(count_empty_answers > 1){
                 errors.answers = "Not more than one empty answer";
             }

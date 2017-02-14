@@ -11,7 +11,7 @@ const INITIAL_STATE = {
     loading : true,
     limit : 1,
     polls : {},
-    draft : {question : "", answers : [{text : "", correct : false}, {text : "", correct : false}] },
+    draft : {question : "", answers : [{text : "", correct : false}, {text : "", correct : false}], errors : {} },
     is_fetching_polls : false,
     notifications : {
         show_publish_success : false,
