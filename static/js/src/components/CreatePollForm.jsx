@@ -4,7 +4,6 @@
 import * as React from "react";
 import Base from '../views/BaseTemplate.jsx'
 import ToggleButton from 'react-toggle-button'
-import { Field, reduxForm } from 'redux-form'
 
 const CreatePollForm = ({question, answers, save, remove_answer, publish}) => {
     const answers_components = answers.map(

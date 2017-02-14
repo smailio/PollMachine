@@ -2,6 +2,7 @@
  * Created by anis on 17/01/17.
  */
 import axios from 'axios'
+import _ from 'underscore'
 
 export const REQUEST_POLLS = "REQUEST_POLLS";
 export function request_polls() {
@@ -111,22 +112,36 @@ export function save_draft(changes) {
     }
 }
 
+export const INVALID_DRAFT = "INVALID_DRAFT";
+export function invalid_draft(errors){
+    return {
+        type : INVALID_DRAFT,
+        errors
+    }
+}
 export function publish() {
     return (dispatch, get_state) => {
         const {draft} = get_state();
         const question = draft.question;
         const answers = draft.answers;
-        // const valid_poll = answers.length < 2 && question != '';
-        // if (!valid_poll) {
-        //     dispatch(); //
-        // }
-        if(question ==''){
-            dispatch(empty_question_error_notification())
-        }
-        for(answer of answers){
-            if(answer == ''){
-                dispatch(empty_answer_error_notification());
+        const validate = draft => {
+            const errors = {};
+            if(!draft.question){
+                errors.question = "Required";
             }
+            if(!draft.answers.length < 2){
+                errors.answers = "At least two answers";
+            }
+            const count_empty_answers = draft.filter( (answer) => answer.text == '').length;
+            if(count_empty_answers > 1){
+                errors.answers = "Not more than one empty answer";
+            }
+            return errors;
+        };
+        const errors = validate(draft);
+        if(!_.isEmpty(errors)){
+            dispatch(invalid_draft(errors));
+            return ;
         }
         axios.post('/api/publish', {
             question,

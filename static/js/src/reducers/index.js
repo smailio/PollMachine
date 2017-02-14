@@ -4,7 +4,7 @@
 import {REQUEST_POLLS, RECEIVE_POLLS, REVEAL_ANSWERS,
     INCREMENT_POLLS_LIMIT, REQUEST_POLL, RECEIVE_POLL,
     SAVE_DRAFT, EMPTY_DRAFT, REMOVE_DRAFT_ANSWER,
-    SHOW_PUBLISH_SUCCESS, HIDE_PUBLISH_SUCCESS} from '../actions/index'
+    INVALID_DRAFT, SHOW_PUBLISH_SUCCESS, HIDE_PUBLISH_SUCCESS} from '../actions/index'
 import _ from 'underscore'
 
 const INITIAL_STATE = {
@@ -156,6 +156,9 @@ function draft(state = INITIAL_STATE, action){
             };
         case EMPTY_DRAFT:
             return {...state, draft : INITIAL_STATE.draft};
+        case INVALID_DRAFT:
+            const errors = action.errors;
+            return {...state, draft : {...state.draft, errors}};
         default:
             return state;
     }
@@ -195,6 +198,7 @@ function reducers(state = INITIAL_STATE, action) {
         case SAVE_DRAFT:
         case EMPTY_DRAFT:
         case REMOVE_DRAFT_ANSWER:
+        case INVALID_DRAFT:
             return draft(state, action);
         case SHOW_PUBLISH_SUCCESS:
         case HIDE_PUBLISH_SUCCESS:
