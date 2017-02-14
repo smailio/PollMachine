@@ -1,0 +1,70 @@
+
+.neutral-answer {
+}
+
+.neutral-answer:hover {
+    border: 1px solid #1f2021;
+    border-radius: 2px;
+}
+
+.selected-answer {
+    border: 1px solid #1f2021;
+    border-radius: 2px;
+}
+
+.answer {
+    margin: 3px 3px 3px 3px;
+    border-radius: 1px;
+    height: 30px;
+}
+
+.right-answer {
+    background: rgba(165, 222, 95, 0.55);
+    height: 100%;
+}
+
+.wrong-answer {
+    background: rgba(249, 100, 89, 1);
+    height: 100%;
+}
+
+.voters-counter {
+    color: lightslategrey;
+    font-size: x-small;
+    height: 30px;
+    padding: 12px 3px 3px 3px;
+}
+
+.voters-percentage {
+    padding: 10px 3px 3px 3px;
+    font-weight: bold;
+    font-size: small;
+    height: 30px;
+}
+
+.answer-content {
+    position: absolute;
+}
+
+.answers-appear {
+    opacity: 0.01;
+}
+
+.answers-appear.answers-appear-active {
+    opacity: 1;
+    transition: opacity 500ms ease-in;
+}
+
+.polls-enter {
+    opacity: 0.1;
+    top : 100px;
+    position: absolute;
+
+}
+
+.polls-enter-active {
+    opacity: 1;
+    top : 0;
+    position: relative;
+    transition: 600ms ease-in all;
+}
