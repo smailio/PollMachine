@@ -5,11 +5,19 @@ import * as React from "react";
 import Base from '../views/BaseTemplate.jsx'
 import ToggleButton from 'react-toggle-button'
 import _ from 'underscore'
-const CreatePollForm = ({question, answers, save, remove_answer, publish, errors}) => {
+import {Link} from 'react-router'
+
+
+const CreatePollForm = ({
+    question, answers,
+    allow_anonymous_vote, visibility, voters_visibility,
+    save, remove_answer,
+    publish, errors
+}) => {
     const question_form_control_class = (!_.isEmpty(errors) && errors.question) ? 'form-control form-control-danger' : 'form-control';
     const answers_form_control_class = (!_.isEmpty(errors) && errors.answers) ? 'form-control form-control-danger' : 'form-control';
-    const question_form_group_class = (!_.isEmpty(errors) && errors.question)? 'form-group has-danger' : 'form-group';
-    const answers_form_group_class = (!_.isEmpty(errors) && errors.answers)? 'form-group has-danger' : 'form-group';
+    const question_form_group_class = (!_.isEmpty(errors) && errors.question) ? 'form-group has-danger' : 'form-group';
+    const answers_form_group_class = (!_.isEmpty(errors) && errors.answers) ? 'form-group has-danger' : 'form-group';
     const answers_components = answers.map(
         (answer, index) => (
             <div key={index} className={"row " + answers_form_group_class}>
@@ -93,16 +101,16 @@ const CreatePollForm = ({question, answers, save, remove_answer, publish, errors
                             <div id="answers_input" className="row">
                                 <div className="col">
                                     {answers_components}
-                                    <div className={"row " + answers_form_group_class} >
-                                        <div className="col">
-                                        {
-                                            errors.answers &&
-                                            <div className="form-control-feedback">
-                                                {errors.answers}
+                                    {
+                                        errors.answers &&
+                                        <div className={"row " + answers_form_group_class}>
+                                            <div className="col">
+                                                <div className="form-control-feedback">
+                                                    {errors.answers}
+                                                </div>
                                             </div>
-                                        }
                                         </div>
-                                    </div>
+                                    }
                                     <div className="row">
                                         <div className="col">
                                             <button
@@ -119,6 +127,100 @@ const CreatePollForm = ({question, answers, save, remove_answer, publish, errors
                         </div>
                     </div>
                     <div className="row">
+                        <div className="col">Who can vote ?</div>
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <div className="form-check form-check-inline">
+                                <label className="form-check-label">
+                                    <input
+                                        onChange={() => save({allow_anonymous_vote: !allow_anonymous_vote})}
+                                        value="everyone"
+                                        checked={allow_anonymous_vote == true}
+                                        type="radio"
+                                        className="form-check-input"/> everyone
+                                </label>
+                            </div>
+                            <div className="form-check form-check-inline">
+                                <label className="form-check-label">
+                                    <input
+                                        onChange={() => save({allow_anonymous_vote: !allow_anonymous_vote})}
+                                        value="authenticated users"
+                                        checked={allow_anonymous_vote == false}
+                                        type="radio"
+                                        className="form-check-input"/> authenticated users
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    { allow_anonymous_vote == false &&
+                    <div>
+                        <div className="row">
+                            <div className="col">Who can see voters ?</div>
+                        </div>
+                        < div className="row">
+                            <div className="col">
+                                <div className="form-check form-check-inline">
+                                    <label className="form-check-label">
+                                        <input
+                                            onChange={(e) => save({voters_visibility: e.target.value})}
+                                            value="voters"
+                                            checked={voters_visibility == "voters"}
+                                            type="radio"
+                                            className="form-check-input"/> voters
+                                    </label>
+                                </div>
+                                <div className="form-check form-check-inline">
+                                    <label className="form-check-label">
+                                        <input
+                                            onChange={(e) => save({voters_visibility: e.target.value})}
+                                            value="me"
+                                            checked={voters_visibility == "me"}
+                                            type="radio"
+                                            className="form-check-input"/> me
+                                    </label>
+                                </div>
+                                <div className="form-check form-check-inline">
+                                    <label className="form-check-label">
+                                        <input
+                                            onChange={(e) => save({voters_visibility: e.target.value})}
+                                            value="nobody"
+                                            checked={voters_visibility == "nobody"}
+                                            type="radio"
+                                            className="form-check-input"/> nobody
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    <div className="row">
+                        <div className="col">
+                            <div className="form-check">
+                                <label className="form-check-label">
+                                    <input
+                                        id="visibility"
+                                        onChange={() => save({visibility: ""})}
+                                        checked={visibility == "shareable_by_link"}
+                                        className="form-check-input"
+                                        type="checkbox"/>
+                                    <span>Shareable by link only</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    {
+                        errors.log_in_required &&
+                        <div className="row">
+                            <div className="col">
+                                <div className="alert alert-danger">
+                                    You need to <Link to="/log_in" className="alert-link">log in</Link> in order to create a
+                                    poll with such a configuration !
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div className="row">
                         <div className="offset-5 col-2">
                             <button
                                 onClick={publish}
@@ -129,7 +231,7 @@ const CreatePollForm = ({question, answers, save, remove_answer, publish, errors
                     </div>
                 </div>
             </div>
-        </Base>
+        </Base >
     )
 };
 
@@ -139,6 +241,8 @@ CreatePollForm.propTypes = {
         React.PropTypes.shape(
             {text: React.PropTypes.string.isRequired, correct: React.PropTypes.bool.isRequired})
     ).isRequired,
+    allow_anonymous_vote: React.PropTypes.bool.isRequired,
+    visibility: React.PropTypes.string.isRequired,
     save: React.PropTypes.func.isRequired,
     publish: React.PropTypes.func.isRequired,
     remove_answer: React.PropTypes.func.isRequired

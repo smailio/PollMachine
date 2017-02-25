@@ -12,7 +12,7 @@ const Header = ({publish_notification}) => (
             <div className="row">
                 <div className="offset-4 col-8">
                     <div className="row">
-                        <div className="offset-1 col-2">
+                        <div className="col-2">
                             <Link to="/" style={{color: "black"}}>all</Link>
                         </div>
                         <div className="col-2">

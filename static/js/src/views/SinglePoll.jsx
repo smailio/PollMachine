@@ -42,7 +42,7 @@ export default connect(
     (dispatch) => ({
         vote :
             (poll_id, answer_id) => {
-                dispatch(send_vote(poll_id, answer_id));
-                dispatch(fetch_poll(poll_id))},
+                dispatch(send_vote(poll_id, answer_id, () => dispatch(fetch_poll(poll_id))));
+                },
         load_poll: (poll_id) => dispatch(fetch_poll(poll_id))})
 )(SinglePoll);

@@ -35,6 +35,6 @@ export default class PollList extends React.Component {
 
 PollList.propTypes = {
     polls: React.PropTypes.object.isRequired,
-    limit: React.PropTypes.number.isRequired,
+    limit: React.PropTypes.number,
     vote: React.PropTypes.func.isRequired
 };

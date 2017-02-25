@@ -12,10 +12,11 @@ export function request_polls() {
 }
 
 export const RECEIVE_POLLS = "RECEIVE_POLLS";
-export function receive_polls(polls) {
+export function receive_polls(polls, section) {
     return {
         type: RECEIVE_POLLS,
-        polls
+        polls,
+        section
     };
 }
 
@@ -65,7 +66,7 @@ export function fetch_polls() {
                 }
             }
         ).then((response) => {
-            dispatch(receive_polls(response.data.polls));
+            dispatch(receive_polls(response.data.polls, "feed"));
         }).catch((error) => {
             console.log({error})
         });
@@ -86,13 +87,28 @@ export function fetch_poll(poll_id) {
     }
 }
 
-export function send_vote(poll_id, answer_id) {
+export function send_vote(poll_id, answer_id, callback) {
     return dispatch => {
         return axios.post('/api/vote', {
             poll_id: poll_id,
             answer_id: answer_id
         }).then(() => {
             dispatch(reveal_answers(poll_id, answer_id));
+            if (callback){
+                callback();
+            }
+        }).catch( ({response}) => {
+            switch (response.status){
+                case 401:
+                    dispatch(require_log_in_to_vote(poll_id));
+                    break;
+                case 403:
+                    dispatch(show_duplicate_vote_warning(poll_id));
+                    break;
+                default:
+                    // error during voting
+                    break;
+            }
         });
     };
 }
@@ -121,9 +137,12 @@ export function invalid_draft(errors){
 }
 export function publish() {
     return (dispatch, get_state) => {
-        const {draft} = get_state();
+        const {draft, user_logged_in} = get_state();
         const question = draft.question;
         const answers = draft.answers;
+        const visibility = draft.visibility;
+        const voters_visibility = draft.voters_visibility;
+        const allow_anonymous_vote = draft.allow_anonymous_vote;
         const validate = draft => {
             const errors = {};
             if(!draft.question){
@@ -136,6 +155,9 @@ export function publish() {
             if(count_empty_answers > 1){
                 errors.answers = "Not more than one empty answer";
             }
+            if(voters_visibility == "me" && !user_logged_in){
+                errors.log_in_required = true;
+            }
             return errors;
         };
         const errors = validate(draft);
@@ -145,9 +167,14 @@ export function publish() {
         }
         axios.post('/api/publish', {
             question,
-            answers
+            answers,
+            visibility,
+            voters_visibility,
+            allow_anonymous_vote
         }).then(() => {
             dispatch(notify_publish_success())
+        }).catch(() => {
+            dispatch(notify_publish_failure())
         })
     }
 }
@@ -174,6 +201,21 @@ export function hide_publish_success_notification() {
     }
 }
 
+
+export const SHOW_PUBLISH_FAILURE = "SHOW_PUBLISH_FAILURE";
+export function show_publish_failure_notification() {
+    return {
+        type: SHOW_PUBLISH_FAILURE
+    }
+}
+
+export const HIDE_PUBLISH_FAILURE = "HIDE_PUBLISH_FAILURE";
+export function hide_publish_failure_notification() {
+    return {
+        type : HIDE_PUBLISH_FAILURE
+    }
+}
+
 export const EMPTY_DRAFT = "EMPTY_DRAFT";
 export function empty_draft(){
     return {
@@ -189,3 +231,38 @@ export function notify_publish_success(){
     }
 }
 
+export function notify_publish_failure(){
+    return (dispatch) => {
+        dispatch(show_publish_failure_notification());
+        setTimeout(() => dispatch(hide_publish_failure_notification()), 2000);
+    }
+}
+
+export const REQUIRE_LOG_IN_TO_VOTE = "REQUIRE_LOG_IN_TO_VOTE";
+export function require_log_in_to_vote(poll_id){
+    return {
+        type: REQUIRE_LOG_IN_TO_VOTE,
+        poll_id
+    }
+}
+
+export const SHOW_DUPLICATE_VOTE_WARNING = "SHOW_DUPLICATE_VOTE_WARNING";
+export function show_duplicate_vote_warning(poll_id){
+    return {
+        type : SHOW_DUPLICATE_VOTE_WARNING,
+        poll_id
+    }
+}
+
+export function fetch_created_polls(){
+    return (dispatch) => {
+        dispatch(request_polls());
+        return axios.get(
+            '/api/polls/mine'
+        ).then((response) => {
+            dispatch(receive_polls(response.data.polls, "mine"));
+        }).catch((error) => {
+            console.log({error})
+        });
+    }
+}

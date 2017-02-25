@@ -38,4 +38,12 @@ function dispatch_notifications(notifications, notification_system) {
             position: 'bc'
         });
     }
+    if(notifications.show_publish_failure) {
+        notification_system.addNotification({
+            message: 'Publish failure ! ',
+            level: 'error',
+            autoDismiss: 2,
+            position: 'bc'
+        });
+    }
 }

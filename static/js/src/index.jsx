@@ -5,6 +5,7 @@ import React from 'react';
 import {render} from 'react-dom';
 import {Router, Route, hashHistory, Link} from 'react-router'
 import PollMachine from './views/Home.jsx'
+import Mine from './views/Mine.jsx'
 import SinglePoll from './views/SinglePoll.jsx'
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
@@ -19,7 +20,7 @@ class App extends React.Component {
             <Router history={hashHistory}>
                 <Route path="/" component={PollMachine}/>
                 <Route path="/poll/:poll_id" component={SinglePoll}/>
-                <Route path="/mine" component={PollMachine}/>
+                <Route path="/mine" component={Mine}/>
                 <Route path="/answers" component={PollMachine}/>
                 <Route path="/create" component={CreatePollFormContainer}/>
             </Router>

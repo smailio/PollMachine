@@ -3,15 +3,14 @@
  */
 
 import React from 'react';
-import Loading  from 'react-loading';
-import PollListContainer from '../containers/PollList.js'
+import Feed from '../containers/PollList.js'
 import {Router, Route, hashHistory, Link} from 'react-router'
 import {connect} from 'react-redux'
 import {fetch_polls} from '../actions/index.js'
 import _ from 'underscore'
 import Base from './BaseTemplate.jsx'
 
-class PollMachine extends React.Component {
+export class PollMachine extends React.Component {
 
     constructor() {
         super();
@@ -23,19 +22,11 @@ class PollMachine extends React.Component {
 
     render() {
         if (this.props.polls_empty) {
-            return (
-                <Base>
-                    <div className="row">
-                        <div className="offset-5">
-                            <Loading type='balls' color='#e3e3e3'/>
-                        </div>
-                    </div>
-                </Base>)
+            return <Base loading={true} />
         }
         return (
             <Base>
-                <div style={{marginTop : 20}}></div>
-                <PollListContainer />
+                <Feed />
             </Base>)
     }
 }
@@ -45,6 +36,6 @@ PollMachine.propTypes = {
 };
 
 export default connect(
-    (state, own_props) => ({polls_empty : _.isEmpty(state.polls) }),
+    (state, own_props) => ({polls_empty : _.isEmpty(state.feed) }),
     (dispatch) => ({ afterDidMount : () => dispatch(fetch_polls()) })
 )(PollMachine);

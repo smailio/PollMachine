@@ -15,6 +15,7 @@ export default class Poll extends React.Component {
         let pol_url = "/poll/" + poll.poll_id;
         let is_answered = poll.answered != undefined;
         let selected_answer_id = poll.selected_answer_id;
+        let log_in_required = poll.log_in_required == true;
         let total_voters = this.props.poll.answers.reduce(
             (accumulator, answer) => {
                 return accumulator + answer.voters;
@@ -30,7 +31,7 @@ export default class Poll extends React.Component {
                     respond={() => this.props.vote(poll.poll_id, answer.answer_id)}
                     total_voters={total_voters}/>;
             });
-        if (is_answered) {  
+        if (is_answered) {
             answers_components = (
                 <ReactCSSTransitionGroup
                     transitionName="answers"
@@ -45,16 +46,27 @@ export default class Poll extends React.Component {
         return (
             <div className="row">
                 <div className="col-md-12">
-                    <div className="card" style={{border : 0}}>
+                    <div className="card" style={{border: 0}}>
                         <div className="card-block">
                             <h4 className="card-title">
                                 <Link
-                                    style={{color : "black"}}
+                                    style={{color: "black"}}
                                     to={pol_url}>
                                     {question}
                                 </Link>
                             </h4>
                             {answers_components}
+                            {
+                                log_in_required &&
+                                <div className="row">
+                                    <div className="col form-check has-danger">
+                                        <div className="form-control-feedback">
+                                            <Link to="/log_in" style={{color : "#d9534f"}}><strong>log in</strong></Link> required !
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
                         </div>
                     </div>
                 </div>
