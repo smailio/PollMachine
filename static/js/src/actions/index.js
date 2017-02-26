@@ -266,3 +266,19 @@ export function fetch_created_polls(){
         });
     }
 }
+
+export function fetch_login_status(){
+    return (dispatch) =>{
+        return axios
+            .get('/api/user/login_status')
+            .then((response) => dispatch(receive_user_status(response.data.logged_in)));
+    };
+}
+
+export const RECEIVE_LOGIN_STATUS = "RECEIVE_LOGIN_STATUS";
+export function receive_user_status(logged_in){
+    return {
+        type : RECEIVE_LOGIN_STATUS,
+        logged_in : logged_in
+    }
+}

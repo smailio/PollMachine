@@ -5,6 +5,6 @@ import Header from '../components/Header.jsx'
 import {connect} from 'react-redux'
 
 export default connect(
-    (state) => ({publish_notification : state.notifications.show_publish_success}),
+    (state) => ({logged_in : state.user_logged_in}),
     null
 )(Header);

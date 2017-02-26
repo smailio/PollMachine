@@ -8,6 +8,7 @@ import {MyPolls} from '../containers/PollList.js'
 import * as React from "react";
 import Base from './BaseTemplate.jsx'
 import {Link} from 'react-router'
+import {browserHistory} from 'react-router'
 
 export class Mine extends React.Component {
 
@@ -29,8 +30,12 @@ export class Mine extends React.Component {
                                 <h5>It seem's that you haven't published anything yet :( </h5>
                             </div>
                             :
-                            <div className="col-2 offset-5">
-                                You need to <Link to="/log_in">log in </Link>
+                            <div className="offset-4 col-8">
+                                <div className="row">
+                                    <div className="offset-2 col-2">
+                                        <Link to="/log_in">log in </Link>
+                                    </div>
+                                </div>
                             </div>
                     }
                 </div>

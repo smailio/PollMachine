@@ -5,8 +5,14 @@ import React from 'react';
 import Header from '../containers/Header.js'
 import Notifications from '../containers/Notifications.js'
 import Loading  from 'react-loading';
+import {connect} from 'react-redux'
+import {fetch_login_status} from '../actions/index.js'
 
-export default class Base extends React.Component {
+class Base extends React.Component {
+    componentDidMount() {
+        this.props.afterDidMount();
+    }
+
     render() {
         return (
             <div className="container">
@@ -27,3 +33,8 @@ export default class Base extends React.Component {
             </div>)
     }
 }
+
+export default connect(
+    null,
+    (dispatch) => ({afterDidMount : ()=>dispatch(fetch_login_status())})
+)(Base);

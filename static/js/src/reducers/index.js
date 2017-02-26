@@ -7,7 +7,7 @@ import {
     SAVE_DRAFT, EMPTY_DRAFT, REMOVE_DRAFT_ANSWER,
     INVALID_DRAFT, SHOW_PUBLISH_SUCCESS, HIDE_PUBLISH_SUCCESS,
     SHOW_PUBLISH_FAILURE, HIDE_PUBLISH_FAILURE, REQUIRE_LOG_IN_TO_VOTE,
-    SHOW_DUPLICATE_VOTE_WARNING
+    SHOW_DUPLICATE_VOTE_WARNING, RECEIVE_LOGIN_STATUS
 } from '../actions/index'
 import _ from 'underscore'
 
@@ -303,6 +303,8 @@ function reducers(state = INITIAL_STATE, action) {
         case SHOW_PUBLISH_FAILURE:
         case HIDE_PUBLISH_FAILURE:
             return {...state, notifications: notifications(state.notifications, action)};
+        case RECEIVE_LOGIN_STATUS:
+            return {...state, user_logged_in : action.logged_in};
         default:
             return state;
     }

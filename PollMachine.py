@@ -126,8 +126,3 @@ def publish():
 def respond_to_dumb_request():
     time.sleep(1)
     return dumps({"message": "hello world", "is_authenticated": current_user.is_authenticated})
-
-
-@poll_machine.route('/log_in')
-def log_in():
-    return render_template('log_in.html')
