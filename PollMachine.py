@@ -3,7 +3,7 @@ from flask import render_template, request, Response
 from bson.json_util import dumps
 import time
 from flask_login import current_user, login_required
-
+import search
 from mongodal import dal
 
 poll_machine = Blueprint('poll_machine', __name__, template_folder='templates')
@@ -114,10 +114,53 @@ def publish():
     }
     if current_user.is_anonymous and new_poll["voters_visibility"] == "me":
         return Response(status=401, mimetype='application/json')
+
+    def validate(poll):
+        if len(poll["question"]) > 200:
+            return False
+        max_answer_len = max([len(answer["text"]) for answer in poll["answers"]])
+        if max_answer_len > 40:
+            return False
+        return True
+
+    if not validate(new_poll):
+        return Response(status=400, mimetype='application/json')
     if current_user.is_authenticated:
         new_poll["author_id"] = current_user.social_id
     new_poll_id = dal.create_poll(**new_poll)
+    if current_user.is_authenticated:
+        search.index({
+            "author_id": new_poll["author_id"],
+            "question": new_poll["question"],
+            "answers": new_poll["answers"],
+            "db_id": new_poll_id
+        })
     response = dumps({"new_poll_id": new_poll_id})
+    return Response(response=response, status=200, mimetype='application/json')
+
+
+@poll_machine.route('/api/mine/search')
+# @login_required
+def search_in_mine():
+    # response = dumps({"polls": [{
+    #     "poll_id": "100A",
+    #     "allow_anonymous_vote": False,
+    #     "visibility": "shareable_by_link",
+    #     "answers": [
+    #         {"text": "27", "voters_emails": [], "correct": False, "answer_id": 0, "voters": 0},
+    #         {"text": "28", "voters_emails": ["smail.a.anis@gmail.com"], "correct": False, "answer_id": 1, "voters": 1},
+    #         {"text": "29", "voters_emails": [], "correct": False, "answer_id": 2, "voters": 0}],
+    #     "voters_visibility": "nobody",
+    #     "question": "combien y a t-il de jours dans le mois de fevrire?"}]
+    # })
+    filters = {
+        "author_id": current_user.social_id,
+        "keywords": request.args.get('keywords')
+    }
+    results = search.search(**filters)
+    poll_ids = [result["db_id"] for result in results]
+    polls = [dal.find_polls(poll_id=poll_id)[0] for poll_id in poll_ids]
+    response = dumps({"polls": polls})
     return Response(response=response, status=200, mimetype='application/json')
 
 

@@ -7,7 +7,8 @@ import {
     SAVE_DRAFT, EMPTY_DRAFT, REMOVE_DRAFT_ANSWER,
     INVALID_DRAFT, SHOW_PUBLISH_SUCCESS, HIDE_PUBLISH_SUCCESS,
     SHOW_PUBLISH_FAILURE, HIDE_PUBLISH_FAILURE, REQUIRE_LOG_IN_TO_VOTE,
-    SHOW_DUPLICATE_VOTE_WARNING, RECEIVE_LOGIN_STATUS
+    SHOW_DUPLICATE_VOTE_WARNING, RECEIVE_LOGIN_STATUS, SAVE_SEARCH_TEXT,
+    RECEIVE_SEARCH_RESULT
 } from '../actions/index'
 import _ from 'underscore'
 
@@ -15,8 +16,8 @@ const INITIAL_STATE = {
     loading: true,
     limit: 1,
     polls: {},
-    feed: [],
-    mine: [],
+    feed: [/* poll ids */],
+    mine: [/* poll ids */],
     draft: {
         question: "",
         answers: [{text: "", correct: false}, {text: "", correct: false}],
@@ -30,6 +31,10 @@ const INITIAL_STATE = {
     notifications: {
         show_publish_success: false,
         show_publish_failure: false
+    },
+    search: {
+        text : "",
+        result : {/* polls */}
     }
 };
 
@@ -278,6 +283,17 @@ function notifications(state = INITIAL_STATE.notifications, action) {
     }
 }
 
+function search(state = INITIAL_STATE.search, action){
+    switch (action.type){
+        case SAVE_SEARCH_TEXT:
+            return {...state, text : action.text};
+        case RECEIVE_SEARCH_RESULT:
+            return {...state, result : action.polls};
+        default:
+            return state;
+    }
+}
+
 function reducers(state = INITIAL_STATE, action) {
     switch (action.type) {
         case REQUEST_POLL:
@@ -305,6 +321,9 @@ function reducers(state = INITIAL_STATE, action) {
             return {...state, notifications: notifications(state.notifications, action)};
         case RECEIVE_LOGIN_STATUS:
             return {...state, user_logged_in : action.logged_in};
+        case SAVE_SEARCH_TEXT:
+        case RECEIVE_SEARCH_RESULT:
+            return {...state, search : search(state.search, action)};
         default:
             return state;
     }

@@ -35,3 +35,14 @@ export const MyPolls = connect(
         }
     })
 )(PollList);
+
+export const SearchResult = connect(
+    (state, own_props) => ({ polls: state.search.result}),
+    (dispatch) => ({
+        vote: (poll_id, answer_id) => {
+            dispatch(send_vote(poll_id, answer_id, () => {
+                dispatch(fetch_poll(poll_id))
+            }));
+        }
+    })
+)(PollList);

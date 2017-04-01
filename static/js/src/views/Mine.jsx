@@ -4,7 +4,8 @@
 import {connect} from 'react-redux'
 import {fetch_created_polls} from '../actions/index.js'
 import _ from 'underscore'
-import {MyPolls} from '../containers/PollList.js'
+import {MyPolls, SearchResult} from '../containers/PollList.js'
+import SearchForm from '../containers/SearchForm.js'
 import * as React from "react";
 import Base from './BaseTemplate.jsx'
 import {Link} from 'react-router'
@@ -43,7 +44,12 @@ export class Mine extends React.Component {
         }
         return (
             <Base>
-                <MyPolls />
+                <div className="row">
+                    <div className="offset-3 col-6">
+                        <SearchForm />
+                    </div>
+                </div>
+                {(this.props.show_result) ? <SearchResult /> : <MyPolls />}
             </Base>)
     }
 }
@@ -53,6 +59,10 @@ Mine.propTypes = {
 };
 
 export default connect(
-    (state, own_props) => ({user_logged_in: state.user_logged_in, is_empty: _.isEmpty(state.mine)}),
+    (state, own_props) => ({
+        user_logged_in: state.user_logged_in,
+        is_empty: _.isEmpty(state.mine),
+        show_result: state.search.text && !_.isEmpty(state.search.result)
+    }),
     (dispatch) => ({afterDidMount: () => dispatch(fetch_created_polls())})
 )(Mine);
